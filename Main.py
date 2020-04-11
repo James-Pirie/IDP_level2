@@ -1,5 +1,13 @@
 from tkinter import *
-root = Tk()
-root.title("Main Menu")
-root.geometry("800x600")
-root.mainloop()
+
+
+def generate_tk_window(window_title, dimensions):
+    """Initialize a Tk window with a certain title and a certain size"""
+    window = Tk()
+    window.title(window_title)
+    window.geometry(dimensions)
+    window.mainloop()
+    return window
+
+
+root = generate_tk_window("Main Menu", "800x600")
