@@ -13,13 +13,18 @@ def generate_tk_window(window_title, dimensions):
     return window
 
 
-root = generate_tk_window("Main Menu", "800x600")
+# root = generate_tk_window("Main Menu", "800x600")
 
-# randomly select the sentence type 
-sentence_type = random.randint(0, len(Sentence_generator.type_of_sentence_structures)-1)
-final_sentence = sentence(sentence_type)
-final_compiled_sentence = final_sentence.compile_sentence()
+# randomly select the sentence type
 
+test_list = []
 
+for i in range(2000000):
+    sentence_type = random.randint(0, len(Sentence_generator.type_of_sentence_structures) - 1)
+    final_sentence = sentence(sentence_type)
+    final_compiled_sentence = final_sentence.compile_sentence()
+    test_list.append(final_compiled_sentence)
+
+print(test_list)
 
 
