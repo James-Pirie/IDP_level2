@@ -1,5 +1,6 @@
 import random
 
+compiled_sentence = ""
 # all types of sentences used in this program
 type_of_sentence_structures = ["Subject-verb", "Subject-verb-object", "Subject-verb-adjective",
                                "Subject-verb-adverb-noun"]
@@ -83,6 +84,8 @@ class sentence:
     def compile_sentence(self):
         """randomly select one of sentence generating functions above and use them to generate a sentence"""
         # check what type of sentence the object wants to be compiled
+        global compiled_sentence
+
         if self.structure_type is type_of_sentence_structures[0]:
             compiled_sentence = generate_subject_verb()
         elif self.structure_type is type_of_sentence_structures[1]:
@@ -91,5 +94,18 @@ class sentence:
             compiled_sentence = generate_verb_adjective()
         elif self.structure_type is type_of_sentence_structures[3]:
             compiled_sentence = generate_subject_verb_adverb_noun()
+
+        # make sure the first letter of the sentence is capitalized
+
+        # Divide the sentence into separate words and check if the first word has a capital letter
+        compiled_sentence_words = compiled_sentence.split()
+        compiled_sentence = ""
+        # Put the words back together in order
+        for i in range(len(compiled_sentence_words)):
+            if i == 0:
+                compiled_sentence += compiled_sentence_words[i].capitalize()
+            else:
+                compiled_sentence += compiled_sentence_words[i]
+            compiled_sentence += " "
         # return the finished compiled sentence
         return compiled_sentence
