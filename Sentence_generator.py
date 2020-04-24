@@ -32,6 +32,7 @@ manner_prepositions = open("sentence_objects/prepositions/manner.txt")
 manner_prepositions_list = manner_prepositions.read().split(";")
 time_prepositions = open("sentence_objects/prepositions/time.txt")
 time_prepositions_list = time_prepositions.read().split(";")
+manner_prepositions.close()
 
 
 def generate_subject_verb():
@@ -72,27 +73,28 @@ def generate_subject_verb_adverb_noun():
                            verbs_list[random.randint(0, len(verbs_list) - 1)] + " " + \
                            adverbs_list[random.randint(0, len(adverbs_list) - 1)] + \
                            nouns_list[random.randint(0, len(nouns_list) - 1)] + "."
+
     # return the assembled sentence
     return constructed_sentence
 
 
 class sentence:
-    def __init__(self, type):
+    def __init__(self, sentence_structure_class):
         """initiate the sentence type for the sentence class"""
-        self.structure_type = type_of_sentence_structures[type]
+        self.structure_type = type_of_sentence_structures[sentence_structure_class]
 
     def compile_sentence(self):
         """randomly select one of sentence generating functions above and use them to generate a sentence"""
         # check what type of sentence the object wants to be compiled
         global compiled_sentence
 
-        if self.structure_type is type_of_sentence_structures[0]:
+        if self.structure_type is type_of_sentence_structures[0]:  # subject verb
             compiled_sentence = generate_subject_verb()
-        elif self.structure_type is type_of_sentence_structures[1]:
+        elif self.structure_type is type_of_sentence_structures[1]:  # subject verb object
             compiled_sentence = generate_verb_object()
-        elif self.structure_type is type_of_sentence_structures[2]:
+        elif self.structure_type is type_of_sentence_structures[2]:  # subject verb adjective
             compiled_sentence = generate_verb_adjective()
-        elif self.structure_type is type_of_sentence_structures[3]:
+        elif self.structure_type is type_of_sentence_structures[3]:  # subject verb adverb noun
             compiled_sentence = generate_subject_verb_adverb_noun()
 
         # make sure the first letter of the sentence is capitalized
