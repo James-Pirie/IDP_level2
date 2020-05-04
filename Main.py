@@ -5,7 +5,7 @@ import random
 import Sentence_generator
 from Sentence_generator import sentence
 import pyautogui
-from tkinter import ttk
+from tkinter import ttk, Tk
 
 # ===================================================== Variables ======================================================
 
@@ -14,6 +14,7 @@ list_of_windows_names = []
 current_window = 0
 place_holder = ["Back", "Start Game"]
 game_buttons = ["Close Game"]
+root_buttons = ["Exit", "Next"]
 
 # ===================================================== Functions ======================================================
 
@@ -36,39 +37,49 @@ def generate_tk_window(window_title, dimensions, buttons):
     window.geometry(dimensions)
     list_of_windows.append(window)  # record the  window object in a list to be used in future
     list_of_windows_names.append(window_title)  # record the window name in another list in the same location
-    # print the values out in the console for debug purposes
-    print(list_of_windows)
-    print(list_of_windows_names)
-    print(len(list_of_windows))
+    current_open_window: Tk = window
     # organize the window grid layout so buttons can be placed in correct locations
-    header_label = Label(window, textvariable=window_title, wraplength=20)
-    header_label.grid(row=0, column=0)
     window.grid_rowconfigure(0, weight=1)
     window.grid_columnconfigure(7, weight=1)
     # generate buttons based upon what type of window from my templates the window being generated is
     for i in range(len(buttons)):
+
         # generate buttons appropriate for game window
         if window_title == "Game":
-            exit_game_button = Button(window, text="Exit Game", command=lambda: window.destroy())
+            exit_game_button = Button(window, text="Exit Game", command=lambda: [window.destroy(),
+                                                                                 generate_tk_window("Start Menu",
+                                                                                 resolution,
+                                                                                 place_holder)])
             exit_game_button.grid(row=2, column=0, padx=70, pady=70)
         else:
             # generate appropriate buttons for a menu window
             if buttons[i] == "Back":  # generate back button
-                print("Generating exit button")
-                back_button = ttk.Button(window, text=buttons[i], command=lambda: window.destroy())
+                back_button = ttk.Button(window, text=buttons[i], command=lambda: [window.destroy(),
+                                                                                   generate_tk_window("Main Menu",
+                                                                                   resolution,
+                                                                                   root_buttons)])
+                back_button.grid(row=2, column=0, padx=70, pady=70)
+            if buttons[i] == "Exit":  # generate back button
+                back_button = ttk.Button(window, text=buttons[i], command=lambda: [window.destroy()])
                 back_button.grid(row=2, column=0, padx=70, pady=70)
             if buttons[i] == "Next":  # generate next button
-                print("Generating next button")
+                # assign the generate window command to this button, so it opens a new window upon being pressed
+                # also assign a destroy command to the current window, so no more than one window is open at once
+                # note: window generated depends on parameters provided by type of button
                 next_button1 = ttk.Button(window, text=buttons[i],
-                                          command=lambda: generate_tk_window("Start Menu", resolution, place_holder))
+                                          command=lambda: [current_open_window.destroy(),
+                                                           generate_tk_window("Start Menu", resolution, place_holder)])
                 next_button1.grid(row=2, column=10, padx=70, pady=70)
             if buttons[i] == "Start Game":  # generate start game button
-                print("Generating start game button")
+                # assign the generate window command to this button, so it opens a new window upon being pressed
+                # also assign a destroy command to the current window, so no more than one window is open at once
+                # note: window generated depends on parameters provided by type of button
                 start_game_button1 = ttk.Button(window, text=buttons[i],
-                                                command=lambda: generate_tk_window("Game", resolution, place_holder))
+                                                command=lambda: [current_open_window.destroy(),
+                                                                 generate_tk_window("Game", resolution, place_holder)])
                 start_game_button1.grid(row=2, column=10, padx=70, pady=70)
-
     return window
+
 
 # ======================================================== Code ========================================================
 
@@ -82,7 +93,6 @@ final_compiled_sentence = final_sentence.compile_sentence()
 
 # ======================================================== Root Menu ===================================================
 
-root_buttons = ["Back", "Next"]
 root = generate_tk_window("Main Menu", resolution, root_buttons)
 
 # ======================================================== Game Menu ===================================================
