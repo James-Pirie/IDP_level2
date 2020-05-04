@@ -79,6 +79,7 @@ def generate_subject_verb_adverb_noun():
 
 
 class sentence:
+    """A sentence object that can generate a grammaticaly correct sentence"""
     def __init__(self, sentence_structure_class):
         """initiate the sentence type for the sentence class"""
         self.structure_type = type_of_sentence_structures[sentence_structure_class]
