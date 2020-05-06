@@ -43,7 +43,6 @@ def generate_tk_window(window_title, dimensions, buttons):
     window.grid_columnconfigure(7, weight=1)
     # generate buttons based upon what type of window from my templates the window being generated is
     for i in range(len(buttons)):
-
         # generate buttons appropriate for game window
         if window_title == "Game":
             exit_game_button = Button(window, text="Exit Game", command=lambda: [window.destroy(),
@@ -94,7 +93,4 @@ final_compiled_sentence = final_sentence.compile_sentence()
 # ======================================================== Root Menu ===================================================
 
 root = generate_tk_window("Main Menu", resolution, root_buttons)
-
-# ======================================================== Game Menu ===================================================
-
 root.mainloop()
