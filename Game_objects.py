@@ -39,6 +39,29 @@ def check_answer(answer_input: str, desired_answer: str):
                 elif total_similarity > 5:
                     points += 1
             print(f"'{answer_input}' is {total_similarity * 10}% similar to '{desired_answer}'")
+        elif len(words_in_desired_answer) != len(words_in_answer_input):
+            print("less words")
+            combined_input = answer_input.strip()
+            combined_desired = desired_answer.strip()
+            maximum_similarity = 10
+            similarity = 0
+            similarity_per_word = maximum_similarity/len(combined_input)
+            print(similarity_per_word)
+            try:
+                for z in range(len(combined_desired)):
+                    if combined_input[z] == combined_desired[z]:
+                        similarity += similarity_per_word
+                        print("adding")
+                print(f"'{answer_input}' is {similarity * 10}% similar to '{desired_answer}'")
+            except IndexError:
+                print("Error")
+                print(f"'{answer_input}' is {similarity * 10}% similar to '{desired_answer}'")
+            if similarity > 9:
+                points += 3
+            elif similarity > 7:
+                points += 2
+            elif similarity > 6:
+                points += 1
     return points
 
 
