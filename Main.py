@@ -6,6 +6,8 @@ import Sentence_generator
 from Sentence_generator import sentence
 import pyautogui
 from tkinter import ttk, Tk
+import tkinter.font as tk_font
+import Game_objects
 
 # ===================================================== Variables ======================================================
 
@@ -45,11 +47,45 @@ def generate_tk_window(window_title, dimensions, buttons):
     for i in range(len(buttons)):
         # generate buttons appropriate for game window
         if window_title == "Game":
-            exit_game_button = Button(window, text="Exit Game", command=lambda: [window.destroy(),
-                                                                                 generate_tk_window("Start Menu",
-                                                                                 resolution,
-                                                                                 place_holder)])
-            exit_game_button.grid(row=2, column=0, padx=70, pady=70)
+            # because this loops twice for the other templates to work make sure it doesn't duplicate
+            if i == 1:
+                # create the exit game button
+                exit_game_button = Button(window, text="Exit Game", command=lambda: [window.destroy(),
+                                                                                     generate_tk_window("Start Menu",
+                                                                                     resolution,
+                                                                                     place_holder)])
+                # exit game button parameters
+                exit_game_button.grid(row=2, column=0, padx=70, pady=70)
+                type_of_sentence = random.randint(0, len(Sentence_generator.type_of_sentence_structures) - 1)
+                sentence_to_type = sentence(type_of_sentence)
+                compiled_sentence = sentence_to_type.compile_sentence()  # sentence string
+
+                # set the font sizes for the label and entry
+                label_font = tk_font.Font(family="Lucida Grande", size=30)
+                entry_font = tk_font.Font(family="Lucida Grande", size=30)
+                sentence_to_type_label = Label(window, text=compiled_sentence, font=label_font)
+                sentence_to_type_label.grid(row=0, column=1)
+
+                # setup the entry
+                user_input = StringVar()
+                user_entry = Entry(window, font=entry_font, textvariable=user_input)
+                user_entry.grid(row=1, column=1)
+                user_submission = "initialing"
+
+                # the function that will be called when the user wants to submit
+                def collect_user_submission(event):
+                    """Used to intake the data from an entry"""
+                    user_submission_string = user_input.get()
+                    print(user_submission_string)
+                    number_of_points = Game_objects.check_answer(user_submission_string, compiled_sentence)
+                    print(f"you got {number_of_points} points")
+
+
+                print(user_submission)
+                time_label = Label(window, text="01:00")
+                time_label.grid(row=2, column=2)
+                user_entry.bind("<Return>", collect_user_submission)
+
         else:
             # generate appropriate buttons for a menu window
             if buttons[i] == "Back":  # generate back button

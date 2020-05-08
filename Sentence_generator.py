@@ -1,5 +1,7 @@
 import random
 
+# ================================================ sentence templates ==================================================
+
 compiled_sentence = ""
 # all types of sentences used in this program
 type_of_sentence_structures = ["Subject-verb", "Subject-verb-object", "Subject-verb-adjective",
@@ -12,7 +14,7 @@ nouns_list = nouns.read().split(";")
 # create list of verbs from text file
 verbs = open("sentence_objects/verbs.txt")
 verbs_list = verbs.read().split(";")
-verbs_present = open("sentence_objects/present_tense_verbs")
+verbs_present = open("sentence_objects/present_tense_verbs.txt")
 verbs_present_list = verbs_present.read().split(";")
 
 # create list of adjectives from text file
@@ -20,7 +22,7 @@ adjectives = open("sentence_objects/adjectives.txt")
 adjectives_list = adjectives.read().split(";")
 
 # create a list of descriptive words
-description_verbs = open("sentence_objects/description_verbs")
+description_verbs = open("sentence_objects/description_verbs.txt")
 description_verbs_list = description_verbs.read().split(";")
 
 # create a list of descriptive words
@@ -78,8 +80,10 @@ def generate_subject_verb_adverb_noun():
     return constructed_sentence
 
 
+# ================================================ Assemble sentence ===================================================
+
 class sentence:
-    """A sentence object that can generate a grammaticaly correct sentence"""
+    """A sentence object that can generate a grammatical correct sentence"""
 
     def __init__(self, sentence_structure_class):
         """initiate the sentence type for the sentence class"""
