@@ -14,7 +14,7 @@ def check_answer(answer_input: str, desired_answer: str):
     elif len(answer_input) == 0:
         print(f"'{answer_input}' is 0% similar to '{desired_answer}'")
         points = 0
-    elif answer_input == special_condition:
+    elif answer_input.strip().lower() == special_condition.strip().lower():
         points += 1000
     # if the other two don't amount to anything do an indent analysis of each word and letter the user imputed
     else:
@@ -44,7 +44,7 @@ def check_answer(answer_input: str, desired_answer: str):
                             similarity += similarity_per_letter_in_word
                     total_similarity += similarity
                 except IndexError:
-                    print("Index error")
+                    pass
                 # calculate the score based on how similar the two sentences are
                 if total_similarity > 9:
                     points += 4
@@ -69,17 +69,16 @@ def check_answer(answer_input: str, desired_answer: str):
                 for z in range(len(combined_desired)):
                     if combined_input[z] == combined_desired[z]:
                         similarity += similarity_per_word
-                        print("adding")
                 print(f"'{answer_input}' is {similarity * 10}% similar to '{desired_answer}'")
             except IndexError:
                 print(f"'{answer_input}' is {similarity * 10}% similar to '{desired_answer}'")
             # calculate the score with the additional penalty of having the wrong amount of words
             if similarity > 9:
-                points += 3
+                points += 4
             elif similarity > 7:
-                points += 2
+                points += 3
             elif similarity > 6:
-                points += 1
+                points += 2
     return points
 
 
@@ -92,5 +91,5 @@ test_desired_answer = "Test answer"
 # test conditions
 if __name__ == '__main__':
     print("Testing")
-    x = check_answer(test_answer, test_desired_answer)
+    x = check_answer("Sara won't clean today.", "John Cena won't date now.")
     print(f"points = {x}")

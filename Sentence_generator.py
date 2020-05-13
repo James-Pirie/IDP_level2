@@ -117,3 +117,9 @@ class sentence:
             compiled_sentence += " "
         # return the finished compiled sentence
         return compiled_sentence
+
+
+if __name__ == '__main__':
+    # individual module test condition
+    test_sentence = sentence(random.randint(0, len(type_of_sentence_structures)-1))
+    test_compiled = test_sentence.compile_sentence()

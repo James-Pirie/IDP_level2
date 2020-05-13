@@ -17,6 +17,7 @@ current_window = 0
 place_holder = ["Back", "Start Game"]
 game_buttons = ["Close Game"]
 root_buttons = ["Exit", "Next"]
+number_of_points = 0
 
 # ===================================================== Functions ======================================================
 
@@ -32,9 +33,11 @@ def generate_resolution_based_on_users_resolution():
 
 
 def generate_tk_window(window_title, dimensions, buttons):
+    global counter_var
     """Initialize a Tk window with a certain title and a certain size"""
     # generate a window object and use the title provided in the parameters for the title
     window = Tk()
+    # window.wm_iconbitmap("Images/Logo.png") no workie for some reason?
     window.title(window_title)
     window.geometry(dimensions)
     list_of_windows.append(window)  # record the  window object in a list to be used in future
@@ -52,47 +55,50 @@ def generate_tk_window(window_title, dimensions, buttons):
                 # create the exit game button
                 exit_game_button = Button(window, text="Exit Game", command=lambda: [window.destroy(),
                                                                                      generate_tk_window("Start Menu",
-                                                                                     resolution,
-                                                                                     place_holder)])
+                                                                                                        resolution,
+                                                                                                        place_holder)])
                 # exit game button parameters
                 exit_game_button.grid(row=2, column=0, padx=70, pady=70)
                 type_of_sentence = random.randint(0, len(Sentence_generator.type_of_sentence_structures) - 1)
-                sentence_to_type = sentence(type_of_sentence)
-                compiled_sentence = sentence_to_type.compile_sentence()  # sentence string
 
                 # set the font sizes for the label and entry
-                label_font = tk_font.Font(family="Lucida Grande", size=30)
-                entry_font = tk_font.Font(family="Lucida Grande", size=30)
-                sentence_to_type_label = Label(window, text=compiled_sentence, font=label_font)
+                default_font = tk_font.Font(family="Lucida Grande", size=30)
+
+                # create the label to display the sentence the user will type
+                sentence_to_type_label = Label(window, text=" ", font=default_font)
                 sentence_to_type_label.grid(row=0, column=1)
 
-                # setup the entry
-                user_input = StringVar()
-                user_entry = Entry(window, font=entry_font, textvariable=user_input)
+                user_entry = Text(window, font=default_font, height=1, width=22, bg="#F7F7F7")
                 user_entry.grid(row=1, column=1)
-                user_submission = "initialing"
 
+                counter_var = 0
+                compiled_sentence: str = ""
+
+                def press_on_enter_function(event):
+                    global compiled_sentence
+                    global counter_var
+                    if counter_var != 0:
+                        user_submission_string = user_entry.get("1.0", "end")
+                        user_entry.delete('1.0', END)
+                        Game_objects.check_answer(user_submission_string.strip(), compiled_sentence.strip())
+                    counter_var = 1
+                    sentence_object = sentence(type_of_sentence)
+                    compiled_sentence = sentence_object.compile_sentence()
+                    sentence_to_type_label.configure(text=compiled_sentence)
+
+                press_on_enter_function(1)
                 # the function that will be called when the user wants to submit
-                def collect_user_submission(event):
-                    """Used to intake the data from an entry"""
-                    user_submission_string = user_input.get()
-                    print(user_submission_string)
-                    number_of_points = Game_objects.check_answer(user_submission_string, compiled_sentence)
-                    print(f"you got {number_of_points} points")
-
-
-                print(user_submission)
                 time_label = Label(window, text="01:00")
                 time_label.grid(row=2, column=2)
-                user_entry.bind("<Return>", collect_user_submission)
+                user_entry.bind("<Return>", press_on_enter_function)
 
         else:
             # generate appropriate buttons for a menu window
             if buttons[i] == "Back":  # generate back button
                 back_button = ttk.Button(window, text=buttons[i], command=lambda: [window.destroy(),
                                                                                    generate_tk_window("Main Menu",
-                                                                                   resolution,
-                                                                                   root_buttons)])
+                                                                                                      resolution,
+                                                                                                      root_buttons)])
                 back_button.grid(row=2, column=0, padx=70, pady=70)
             if buttons[i] == "Exit":  # generate back button
                 back_button = ttk.Button(window, text=buttons[i], command=lambda: [window.destroy()])
