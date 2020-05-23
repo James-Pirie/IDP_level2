@@ -2,6 +2,7 @@
 
 from tkinter import *
 import random
+import datetime
 import Sentence_generator
 from Sentence_generator import sentence
 import pyautogui
@@ -18,6 +19,13 @@ place_holder = ["Back", "Start Game"]
 game_buttons = ["Close Game"]
 root_buttons = ["Exit", "Next"]
 number_of_points = 0
+minutes = 0
+seconds = 0
+final_time = 0
+compiled_sentence = ""
+counter_var = 0
+time_list = []
+
 
 # ===================================================== Functions ======================================================
 
@@ -37,6 +45,7 @@ def generate_tk_window(window_title, dimensions, buttons):
     global counter_var
     global final_time
     global sentence_type
+    global seconds
     """Initialize a Tk window with a certain title and a certain size"""
     # generate a window object and use the title provided in the parameters for the title
     window = Tk()
@@ -62,7 +71,6 @@ def generate_tk_window(window_title, dimensions, buttons):
                                                                                                         place_holder)])
                 # exit game button parameters
                 exit_game_button.grid(row=2, column=0, padx=70, pady=70)
-                type_of_sentence = random.randint(0, len(Sentence_generator.type_of_sentence_structures)-1)
 
                 # set the font sizes for the label and entry
                 default_font = tk_font.Font(family="Lucida Grande", size=30)
@@ -75,15 +83,16 @@ def generate_tk_window(window_title, dimensions, buttons):
                 user_entry.focus_set()
                 user_entry.grid(row=1, column=1, sticky="W")
 
-                counter_var = 0
-                compiled_sentence: str = ""
-
+                # the function that will collect and analyse the user input once the enter key is pressed
                 def press_on_enter_function(event):
                     global number_of_points
                     global compiled_sentence
                     global counter_var
                     global sentence_type
+                    global time_list
+                    # make sure that the sentence is being analysed before it is changed to the next one
                     if counter_var != 0:
+                        # collect the user input
                         user_submission_string = user_entry.get("1.0", "end")
                         user_entry.delete('1.0', END)
                         point_gain = Game_objects.check_answer(user_submission_string.strip(),
@@ -91,7 +100,7 @@ def generate_tk_window(window_title, dimensions, buttons):
                         number_of_points += point_gain
                         print(f"you gained {point_gain} points and now have {number_of_points} total points")
                     counter_var = 1
-                    sentence_type = random.randint(0, len(Sentence_generator.type_of_sentence_structures)-1)
+                    sentence_type = random.randint(0, len(Sentence_generator.type_of_sentence_structures) - 1)
                     sentence_object = sentence(sentence_type)
                     compiled_sentence = sentence_object.compile_sentence()
                     sentence_to_type_label.configure(text=compiled_sentence)
@@ -104,18 +113,18 @@ def generate_tk_window(window_title, dimensions, buttons):
 
                 def countdown(time):
                     # change text in label
+                    formatted_time = str(datetime.timedelta(seconds=time))
+                    final_formatted_time = formatted_time[2:7]
                     if time > 0 and list_of_windows_names[len(list_of_windows_names) - 1] == "Game":
                         # call countdown again after 1000ms (1s)
                         root.after(1000, countdown, time - 1)
-                        time_label['text'] = f"{time}"
+                        time_label['text'] = f"{final_formatted_time}"
                     elif time <= 0:
                         window.destroy()
 
                 countdown(final_time)
-
         else:
             # generate appropriate widgets for a window
-
             if buttons[i] == "Back":  # generate back button
                 back_button = ttk.Button(window, text=buttons[i], command=lambda: [window.destroy(),
                                                                                    generate_tk_window("Main Menu",
@@ -148,12 +157,15 @@ def generate_tk_window(window_title, dimensions, buttons):
 
                 def get_time():
                     global final_time
+                    global minutes
+                    global seconds
                     try:
                         time_str = select_time.get(ANCHOR)
                         time_str_list = time_str.split(":")
                         minutes = int((time_str_list[0]))
+                        seconds = int((time_str_list[1]))
                         final_time = int((minutes * 60) + int(time_str_list[1]))
-                    except:
+                    except ValueError:
                         print("You have selected no time")
 
                 for y in list_of_options:
