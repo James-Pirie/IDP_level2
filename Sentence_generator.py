@@ -121,5 +121,9 @@ class sentence:
 
 if __name__ == '__main__':
     # individual module test condition
-    test_sentence = sentence(random.randint(0, len(type_of_sentence_structures)-1))
-    test_compiled = test_sentence.compile_sentence()
+    list = []
+    for i in range(1000000):
+        test_sentence = sentence(random.randint(0, len(type_of_sentence_structures)-1))
+        test_compiled = test_sentence.compile_sentence()
+        list.append(test_compiled)
+    print(list)

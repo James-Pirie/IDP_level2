@@ -1,4 +1,10 @@
+# ===================================================== Imports ========================================================
+
+from playsound import playsound
+
 # ==================================================== functions =======================================================
+
+
 def check_answer(answer_input: str, desired_answer: str):
     """a system which intakes a complete sentence and another sentence and compares
     the two and scores the other sentence on how similar it is to the complete sentence. """
@@ -10,11 +16,14 @@ def check_answer(answer_input: str, desired_answer: str):
     if answer_input == desired_answer:
         points += 10
         print(f"'{answer_input}' is 100% similar to '{desired_answer}'")
+    elif len(answer_input) < 2:
+        points += 0
     # if there are zero words in the answer award zero points
     elif len(answer_input) == 0:
         print(f"'{answer_input}' is 0% similar to '{desired_answer}'")
         points = 0
     elif answer_input.strip().lower() == special_condition.strip().lower():
+        playsound("audio/special_condition.mp3")
         points += 1000
     # if the other two don't amount to anything do an indent analysis of each word and letter the user imputed
     else:
