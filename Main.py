@@ -15,18 +15,24 @@ import Game_objects
 list_of_windows = []
 list_of_windows_names = []
 current_window = 0
-place_holder = ["Back", "Start Game"]
+start_menu_buttons = ["Back", "Start Game"]
 game_buttons = ["Close Game"]
 root_buttons = ["Exit", "Next"]
-number_of_points = 0
+game_over_buttons = ["Exit", "Next"]
+total_amount_of_points = 0
 minutes = 0
 seconds = 0
 final_time = 0
 compiled_sentence = ""
 counter_var = 0
 time_list = []
-
-
+total_amount_of_letters = 0
+total_amount_of_sentences = 0
+total_amount_of_words = 0
+values = {}
+final_formatted_time = ""
+total_amount_of_correct_words = 0
+total_amount_of_correct_letters = 0
 # ===================================================== Functions ======================================================
 
 
@@ -41,11 +47,18 @@ def generate_resolution_based_on_users_resolution():
 
 
 def generate_tk_window(window_title, dimensions, buttons):
-    global number_of_points
+    global total_amount_of_points
     global counter_var
     global final_time
     global sentence_type
     global seconds
+    global total_amount_of_sentences
+    global total_amount_of_letters
+    global total_amount_of_words
+    global total_amount_of_correct_words
+    global total_amount_of_correct_letters
+    global values
+    global final_formatted_time
     """Initialize a Tk window with a certain title and a certain size"""
     # generate a window object and use the title provided in the parameters for the title
     window = Tk()
@@ -68,7 +81,7 @@ def generate_tk_window(window_title, dimensions, buttons):
                 exit_game_button = Button(window, text="Exit Game", command=lambda: [window.destroy(),
                                                                                      generate_tk_window("Start Menu",
                                                                                                         resolution,
-                                                                                                        place_holder)])
+                                                                                                        start_menu_buttons)])
                 # exit game button parameters
                 exit_game_button.grid(row=2, column=0, padx=70, pady=70)
 
@@ -85,20 +98,35 @@ def generate_tk_window(window_title, dimensions, buttons):
 
                 # the function that will collect and analyse the user input once the enter key is pressed
                 def press_on_enter_function(event):
-                    global number_of_points
+                    global total_amount_of_points
                     global compiled_sentence
                     global counter_var
                     global sentence_type
                     global time_list
+                    global total_amount_of_letters
+                    global total_amount_of_sentences
+                    global total_amount_of_words
+                    global total_amount_of_correct_words
+                    global total_amount_of_correct_letters
+                    global values
+                    global final_formatted_time
                     # make sure that the sentence is being analysed before it is changed to the next one
                     if counter_var != 0:
                         # collect the user input
                         user_submission_string = user_entry.get("1.0", "end")
                         user_entry.delete('1.0', END)
-                        point_gain = Game_objects.check_answer(user_submission_string.strip(),
+                        values = Game_objects.check_answer(user_submission_string.strip(),
                                                                compiled_sentence.strip())
-                        number_of_points += point_gain
-                        print(f"you gained {point_gain} points and now have {number_of_points} total points")
+                        print(values)
+                        point_gain = values["Score"]
+                        total_amount_of_points += point_gain
+                        total_amount_of_letters += values["Letters"]
+                        total_amount_of_words += values["Words"]
+                        total_amount_of_sentences += values["Sentences"]
+                        total_amount_of_correct_words += values["Correct_words"]
+                        total_amount_of_correct_letters += values["Correct_letters"]
+
+                        print(f"you gained {point_gain} points and now have {total_amount_of_points} total points")
                     counter_var = 1
                     sentence_type = random.randint(0, len(Sentence_generator.type_of_sentence_structures) - 1)
                     sentence_object = sentence(sentence_type)
@@ -112,6 +140,7 @@ def generate_tk_window(window_title, dimensions, buttons):
                 user_entry.bind("<Return>", press_on_enter_function)
 
                 def countdown(time):
+                    global final_formatted_time
                     # change text in label
                     formatted_time = str(datetime.timedelta(seconds=time))
                     final_formatted_time = formatted_time[2:7]
@@ -121,27 +150,65 @@ def generate_tk_window(window_title, dimensions, buttons):
                         time_label['text'] = f"{final_formatted_time}"
                     elif time <= 0:
                         window.destroy()
+                        generate_tk_window("Game Over", resolution, game_over_buttons)
+
 
                 countdown(final_time)
         else:
             # generate appropriate widgets for a window
+
+            if buttons[i] == "Start Game":  # generate start game button
+                start_game_button1 = ttk.Button(window, text=buttons[i],
+                                                command=lambda: [current_open_window.destroy(),
+                                                                 generate_tk_window("Game", resolution,
+                                                                                    start_menu_buttons)])
+                start_game_button1.grid(row=2, column=3, sticky="W")
+
             if buttons[i] == "Back":  # generate back button
                 back_button = ttk.Button(window, text=buttons[i], command=lambda: [window.destroy(),
                                                                                    generate_tk_window("Main Menu",
                                                                                                       resolution,
                                                                                                       root_buttons)])
                 back_button.grid(row=2, column=0, padx=70, pady=70)
+
             if buttons[i] == "Exit":  # generate back button
                 back_button = ttk.Button(window, text=buttons[i], command=lambda: [window.destroy()])
+
                 back_button.grid(row=2, column=0, padx=70, pady=70)
+
             if buttons[i] == "Next":  # generate next button
-                # assign the generate window command to this button, so it opens a new window upon being pressed
-                # also assign a destroy command to the current window, so no more than one window is open at once
-                # note: window generated depends on parameters provided by type of button
                 next_button1 = ttk.Button(window, text=buttons[i],
                                           command=lambda: [current_open_window.destroy(),
-                                                           generate_tk_window("Start Menu", resolution, place_holder)])
+                                                           generate_tk_window("Start Menu", resolution, start_menu_buttons)])
+                if window_title == "Game Over":
+                    next_button1.configure(text="Play Again")
+
                 next_button1.grid(row=2, column=10, padx=70, pady=70)
+
+            if window_title == "Game Over":
+                results_font = tk_font.Font(family="Lucida Grande", size=13)
+                score_label = Label(font=results_font, text=f"You got {total_amount_of_points} points!")
+                words_per_minute = int(total_amount_of_words/(final_time/60))
+                letters_per_minute = int(total_amount_of_letters/(final_time/60))
+                sentence_per_minute = int(total_amount_of_sentences/(final_time/60))
+                accuracy_per_word = total_amount_of_correct_words/total_amount_of_words
+                accuracy_per_word_str = str(accuracy_per_word*100)
+                accuracy_per_letter = total_amount_of_correct_letters/total_amount_of_letters
+                accuracy_per_letter_str = str(accuracy_per_letter*100)
+                print(f"letters: {total_amount_of_correct_letters}/{total_amount_of_letters}")
+                print(f"words: {total_amount_of_correct_words}/{total_amount_of_words}")
+                results_label1 = Label(font=results_font,
+                                       text=f"Total letters: {total_amount_of_letters}\n\n"
+                                            f"Letters per Minute: {letters_per_minute}\n\n "
+                                            f"Total words: {total_amount_of_words}\n\n"
+                                            f"Words per minutes: {words_per_minute}\n\n "
+                                            f"Total Sentences: {total_amount_of_sentences}\n\n"
+                                            f"Sentences per Minute: {sentence_per_minute}\n\n"
+                                            f"Accuracy per word: {accuracy_per_word_str[0:5]}%\n\n"
+                                            f"Accuracy per letter: {accuracy_per_letter_str[0:5]}%\n\n")
+
+                score_label.grid(column=1, row=0, sticky="W")
+                results_label1.grid(column=1, row=0)
 
             if window_title == "Start Menu":
                 settings_font = tk_font.Font(family="Lucida Grande", size=25)
@@ -151,7 +218,7 @@ def generate_tk_window(window_title, dimensions, buttons):
                 information_label.grid(row=1, column=2, sticky="NE")
                 option_label = Label(text="Time Settings", font=settings_font)
                 option_label.grid(row=0, column=1, sticky="S")
-                list_of_options = ["00:30", "01:00", "02:00", "05:00", "10:00", "30:00"]
+                list_of_options = ["00:01", "00:30", "01:00", "02:00", "05:00", "10:00", "30:00"]
                 select_time = Listbox(height=len(list_of_options))
                 final_time = 30
 
@@ -173,13 +240,6 @@ def generate_tk_window(window_title, dimensions, buttons):
                 select_time.grid(column=1, row=1, sticky="Nw")
                 save_time_button = ttk.Button(text="Set Time", command=get_time)
                 save_time_button.grid(row=1, column=2, sticky="S")
-
-                if buttons[i] == "Start Game":  # generate start game button
-                    start_game_button1 = ttk.Button(window, text=buttons[i],
-                                                    command=lambda: [current_open_window.destroy(),
-                                                                     generate_tk_window("Game", resolution,
-                                                                                        place_holder)])
-                    start_game_button1.grid(row=2, column=3, sticky="W")
     return window
 
 

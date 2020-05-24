@@ -2,29 +2,45 @@
 
 from playsound import playsound
 
+
 # ==================================================== functions =======================================================
 
 
 def check_answer(answer_input: str, desired_answer: str):
     """a system which intakes a complete sentence and another sentence and compares
     the two and scores the other sentence on how similar it is to the complete sentence. """
+    counter = 0
     special_condition_retrieval = open("game_data/data.txt")
     special_condition = special_condition_retrieval.read()
     # initialize the points variable
-    points = 0
+    scores = {"Words": 0, "Letters": 0, "Sentences": 0, "Score": 0, "Correct_words": 0, "Correct_letters": 0}
+    scores["Words"] += len(answer_input.split(" "))
+    scores["Sentences"] += 1
+    sentence = answer_input.split(" ")
+    for i in range(len(sentence)):
+        for i in range(len(sentence[i])):
+            scores["Letters"] += 1
+
     # first check if the two points are identical and award points if they are
     if answer_input == desired_answer:
-        points += 10
+        scores["Score"] += 10
         print(f"'{answer_input}' is 100% similar to '{desired_answer}'")
+        scores["Correct_words"] += len(answer_input.split(" "))
+        words = answer_input.split(" ")
+        for i in range(len(words)):
+            for x in range(len(words[i])):
+                scores["Correct_letters"] += 1
     elif len(answer_input) < 2:
-        points += 0
+        scores["Score"] += 0
     # if there are zero words in the answer award zero points
     elif len(answer_input) == 0:
         print(f"'{answer_input}' is 0% similar to '{desired_answer}'")
-        points = 0
+        scores["Score"] = 0
     elif answer_input.strip().lower() == special_condition.strip().lower():
         playsound("audio/special_condition.mp3")
-        points += 1000
+        scores["Score"] += 1000
+        scores["Correct_words"] += 1000
+        scores ["Correct_letters"] += 1000
     # if the other two don't amount to anything do an indent analysis of each word and letter the user imputed
     else:
         # split the sentences up into words
@@ -51,18 +67,21 @@ def check_answer(answer_input: str, desired_answer: str):
                     for y in range(len(user_answer_word_being_analysed)):
                         if user_answer_word_being_analysed[y] == desired_answer_word_being_analysed[y]:
                             similarity += similarity_per_letter_in_word
+                            if counter != 0:
+                                scores["Correct_letters"] += len(user_answer_word_being_analysed)
                     total_similarity += similarity
                 except IndexError:
-                    pass
+                    print("Index error")
+                    counter += 1
                 # calculate the score based on how similar the two sentences are
                 if total_similarity > 9:
-                    points += 4
+                    scores["Score"] += 4
                 elif total_similarity > 7:
-                    points += 3
+                    scores["Score"] += 3
                 elif total_similarity > 6:
-                    points += 2
+                    scores["Score"] += 2
                 elif total_similarity > 5:
-                    points += 1
+                    scores["Score"] += 1
             print(f"'{answer_input}' is {total_similarity * 10}% similar to '{desired_answer}'")
         # if the two words are of different length compare them for each letter as a whole and penalize
         elif len(words_in_desired_answer) != len(words_in_answer_input):
@@ -77,18 +96,22 @@ def check_answer(answer_input: str, desired_answer: str):
                 # check every letter in the word and then assign an overall similarity score
                 for z in range(len(combined_desired)):
                     if combined_input[z] == combined_desired[z]:
-                        similarity += similarity_per_word
+                        if counter < 1:
+                            scores["Correct_letters"] += 1
+                            similarity += similarity_per_word
                 print(f"'{answer_input}' is {similarity * 10}% similar to '{desired_answer}'")
             except IndexError:
+                print("Index error 1")
+                counter += 1
                 print(f"'{answer_input}' is {similarity * 10}% similar to '{desired_answer}'")
             # calculate the score with the additional penalty of having the wrong amount of words
             if similarity > 9:
-                points += 4
+                scores["Score"] += 4
             elif similarity > 7:
-                points += 3
+                scores["Score"] += 3
             elif similarity > 6:
-                points += 2
-    return points
+                scores["Score"] += 2
+    return scores
 
 
 # ====================================================== Tests =========================================================
