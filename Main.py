@@ -186,19 +186,26 @@ def generate_tk_window(window_title, dimensions, buttons):
                 next_button1.grid(row=2, column=10, padx=70, pady=70)
 
             if window_title == "Game Over":
-                results_font = tk_font.Font(family="Lucida Grande", size=13)
+                results_font = tk_font.Font(family="Lucida Grande", size=18)
                 score_label = Label(font=results_font, text=f"You got {total_amount_of_points} points!")
-                words_per_minute = int(total_amount_of_words/(final_time/60))
-                letters_per_minute = int(total_amount_of_letters/(final_time/60))
-                sentence_per_minute = int(total_amount_of_sentences/(final_time/60))
-                accuracy_per_word = total_amount_of_correct_words/total_amount_of_words
-                accuracy_per_word_str = str(accuracy_per_word*100)
-                accuracy_per_letter = total_amount_of_correct_letters/total_amount_of_letters
-                accuracy_per_letter_str = str(accuracy_per_letter*100)
+                try:
+                    words_per_minute = int(total_amount_of_words/(final_time/60))
+                    letters_per_minute = int(total_amount_of_letters/(final_time/60))
+                    sentence_per_minute = int(total_amount_of_sentences/(final_time/60))
+                    accuracy_per_word = total_amount_of_correct_words/total_amount_of_words
+                    accuracy_per_word_str = str(accuracy_per_word*100)
+                    accuracy_per_letter = total_amount_of_correct_letters/total_amount_of_letters
+                    accuracy_per_letter_str = str(accuracy_per_letter*100)
+                except ZeroDivisionError:
+                    words_per_minute = "0"
+                    letters_per_minute = "0"
+                    sentence_per_minute = "0"
+                    accuracy_per_word_str = "0"
+                    accuracy_per_letter_str = "0"
+
                 print(f"letters: {total_amount_of_correct_letters}/{total_amount_of_letters}")
                 print(f"words: {total_amount_of_correct_words}/{total_amount_of_words}")
-                results_label1 = Label(font=results_font,
-                                       text=f"Total letters: {total_amount_of_letters}\n\n"
+                results_label1 = Label(text=f"Total letters: {total_amount_of_letters}\n\n"
                                             f"Letters per Minute: {letters_per_minute}\n\n "
                                             f"Total words: {total_amount_of_words}\n\n"
                                             f"Words per minutes: {words_per_minute}\n\n "
@@ -207,8 +214,8 @@ def generate_tk_window(window_title, dimensions, buttons):
                                             f"Accuracy per word: {accuracy_per_word_str[0:5]}%\n\n"
                                             f"Accuracy per letter: {accuracy_per_letter_str[0:5]}%\n\n")
 
-                score_label.grid(column=1, row=0, sticky="W")
-                results_label1.grid(column=1, row=0)
+                score_label.grid(column=1, row=0, columnspan=8)
+                results_label1.grid(column=1, row=1, sticky="N", columnspan=8)
 
             if window_title == "Start Menu":
                 settings_font = tk_font.Font(family="Lucida Grande", size=25)
@@ -218,7 +225,7 @@ def generate_tk_window(window_title, dimensions, buttons):
                 information_label.grid(row=1, column=2, sticky="NE")
                 option_label = Label(text="Time Settings", font=settings_font)
                 option_label.grid(row=0, column=1, sticky="S")
-                list_of_options = ["00:01", "00:30", "01:00", "02:00", "05:00", "10:00", "30:00"]
+                list_of_options = ["00:5", "00:30", "01:00", "02:00", "05:00", "10:00", "30:00"]
                 select_time = Listbox(height=len(list_of_options))
                 final_time = 30
 
