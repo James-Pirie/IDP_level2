@@ -47,7 +47,7 @@ def generate_resolution_based_on_users_resolution():
 
 
 def generate_tk_window(window_title, dimensions, buttons):
-    global total_amount_of_points
+    global total_amount_of_points, accuracy_per_word, accuracy_per_letter
     global counter_var
     global final_time
     global sentence_type
@@ -73,6 +73,20 @@ def generate_tk_window(window_title, dimensions, buttons):
     window.grid_columnconfigure(7, weight=1)
     # generate buttons based upon what type of window from my templates the window being generated is
     for i in range(len(buttons)):
+
+        if window_title == "Main Menu":
+            print(total_amount_of_correct_words)
+            print(total_amount_of_correct_letters)
+            total_amount_of_sentences = 0
+            total_amount_of_letters = 0
+            total_amount_of_words = 0
+            total_amount_of_correct_words = 0
+            total_amount_of_points = 0
+            total_amount_of_correct_letters = 0
+            title_font = tk_font.Font(family="Lucida Grande", size=30)
+            title_label = Label(text="Typing Game", font=title_font)
+            title_label.grid(row=0, column=1, columnspan=8)
+
         # generate buttons appropriate for game window
         if window_title == "Game":
             # because this loops twice for the other templates to work make sure it doesn't duplicate
@@ -203,9 +217,10 @@ def generate_tk_window(window_title, dimensions, buttons):
                     accuracy_per_word_str = "0"
                     accuracy_per_letter_str = "0"
 
-                print(f"letters: {total_amount_of_correct_letters}/{total_amount_of_letters}")
-                print(f"words: {total_amount_of_correct_words}/{total_amount_of_words}")
-                results_label1 = Label(text=f"Total letters: {total_amount_of_letters}\n\n"
+                if accuracy_per_word or accuracy_per_letter != 0:
+                    print(f"letters: {total_amount_of_correct_letters}/{total_amount_of_letters}")
+                    print(f"words: {total_amount_of_correct_words}/{total_amount_of_words}")
+                    results_label1 = Label(text=f"Total letters: {total_amount_of_letters}\n\n"
                                             f"Letters per Minute: {letters_per_minute}\n\n "
                                             f"Total words: {total_amount_of_words}\n\n"
                                             f"Words per minutes: {words_per_minute}\n\n "
@@ -213,6 +228,18 @@ def generate_tk_window(window_title, dimensions, buttons):
                                             f"Sentences per Minute: {sentence_per_minute}\n\n"
                                             f"Accuracy per word: {accuracy_per_word_str[0:5]}%\n\n"
                                             f"Accuracy per letter: {accuracy_per_letter_str[0:5]}%\n\n")
+                else:
+                    accuracy_per_word = values["Sim"]
+                    results_label1 = Label(text=f"Total letters: {total_amount_of_letters}\n\n"
+                                                f"Letters per Minute: {letters_per_minute}\n\n "
+                                                f"Total words: {total_amount_of_words}\n\n"
+                                                f"Words per minutes: {words_per_minute}\n\n "
+                                                f"Total Sentences: {total_amount_of_sentences}\n\n"
+                                                f"Sentences per Minute: {sentence_per_minute}\n\n"
+                                                f"Accuracy per word: {accuracy_per_word_str[0:5]}%\n\n"
+                                                f"Accuracy per letter: {accuracy_per_letter_str[0:5]}%\n\n")
+
+
 
                 score_label.grid(column=1, row=0, columnspan=8)
                 results_label1.grid(column=1, row=1, sticky="N", columnspan=8)
@@ -225,7 +252,7 @@ def generate_tk_window(window_title, dimensions, buttons):
                 information_label.grid(row=1, column=2, sticky="NE")
                 option_label = Label(text="Time Settings", font=settings_font)
                 option_label.grid(row=0, column=1, sticky="S")
-                list_of_options = ["00:5", "00:30", "01:00", "02:00", "05:00", "10:00", "30:00"]
+                list_of_options = ["00:30", "01:00", "02:00", "05:00", "10:00", "30:00"]
                 select_time = Listbox(height=len(list_of_options))
                 final_time = 30
 

@@ -13,7 +13,9 @@ def check_answer(answer_input: str, desired_answer: str):
     special_condition_retrieval = open("game_data/data.txt")
     special_condition = special_condition_retrieval.read()
     # initialize the points variable
-    scores = {"Words": 0, "Letters": 0, "Sentences": 0, "Score": 0, "Correct_words": 0, "Correct_letters": 0}
+    scores = {"Words": 0, "Letters": 0, "Sentences": 0, "Score": 0, "Correct_words": 0, "Correct_letters": 0,
+              "Sim": 0, "total": 0}
+    scores["total"] += 1
     scores["Words"] += len(answer_input.split(" "))
     scores["Sentences"] += 1
     sentence = answer_input.split(" ")
@@ -36,6 +38,7 @@ def check_answer(answer_input: str, desired_answer: str):
     elif len(answer_input) == 0:
         print(f"'{answer_input}' is 0% similar to '{desired_answer}'")
         scores["Score"] = 0
+        scores["Sim"] += similarity
     elif answer_input.strip().lower() == special_condition.strip().lower():
         playsound("audio/special_condition.mp3")
         scores["Score"] += 1000
@@ -69,6 +72,7 @@ def check_answer(answer_input: str, desired_answer: str):
                             similarity += similarity_per_letter_in_word
                             if counter != 0:
                                 scores["Correct_letters"] += len(user_answer_word_being_analysed)
+                                scores["Sim"] += similarity
                     total_similarity += similarity
                 except IndexError:
                     print("Index error")
@@ -76,12 +80,16 @@ def check_answer(answer_input: str, desired_answer: str):
                 # calculate the score based on how similar the two sentences are
                 if total_similarity > 9:
                     scores["Score"] += 4
+                    scores["Sim"] += similarity
                 elif total_similarity > 7:
                     scores["Score"] += 3
+                    scores["Sim"] += similarity
                 elif total_similarity > 6:
                     scores["Score"] += 2
+                    scores["Sim"] += similarity
                 elif total_similarity > 5:
                     scores["Score"] += 1
+                    scores["Sim"] += similarity
             print(f"'{answer_input}' is {total_similarity * 10}% similar to '{desired_answer}'")
         # if the two words are of different length compare them for each letter as a whole and penalize
         elif len(words_in_desired_answer) != len(words_in_answer_input):
@@ -99,6 +107,7 @@ def check_answer(answer_input: str, desired_answer: str):
                         if counter < 1:
                             scores["Correct_letters"] += 1
                             similarity += similarity_per_word
+                            scores["Sim"] += similarity
                 print(f"'{answer_input}' is {similarity * 10}% similar to '{desired_answer}'")
             except IndexError:
                 print("Index error 1")
@@ -107,10 +116,15 @@ def check_answer(answer_input: str, desired_answer: str):
             # calculate the score with the additional penalty of having the wrong amount of words
             if similarity > 9:
                 scores["Score"] += 4
+                scores["Sim"] += similarity
             elif similarity > 7:
                 scores["Score"] += 3
+                scores["Sim"] += similarity
             elif similarity > 6:
                 scores["Score"] += 2
+                scores["Sim"] += similarity
+
+
     return scores
 
 
